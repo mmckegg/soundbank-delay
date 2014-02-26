@@ -3,6 +3,8 @@ soundbank-delay
 
 Basic delay processor AudioNode with feedback, filter and wet/dry AudioParams.
 
+Intended for use as a processor in [soundbank](https://github.com/mmckegg/soundbank), but it is compatible with any [Web Audio API](https://developer.mozilla.org/en-US/docs/Web_Audio_API) AudioNode set up.
+
 ## Install
 
 ```bash
@@ -19,15 +21,15 @@ var Delay = require('soundbank-delay')
 
 Create and return an [AudioNode](https://developer.mozilla.org/en-US/docs/Web/API/AudioNode) instance.
 
-### node.time
+### node.time ([AudioParam](https://developer.mozilla.org/en-US/docs/Web/API/AudioParam))
 
-### node.wet
+### node.wet (AudioParam)
 
-### node.dry
+### node.dry (AudioParam)
 
-### node.cutoff
+### node.cutoff (AudioParam)
 
-### node.feedback
+### node.feedback (AudioParam)
 
 ## Example
 
