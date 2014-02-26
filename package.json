@@ -1,0 +1,29 @@
+{
+  "name": "soundbank-delay",
+  "version": "0.0.0",
+  "description": "Basic delay processor AudioNode with feedback, filter and wet/dry AudioParams.",
+  "main": "index.js",
+  "dependencies": {
+    "custom-audio-node": "~0.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "beefy test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mmckegg/soundbank-delay.git"
+  },
+  "keywords": [
+    "waapi",
+    "delay",
+    "feedback",
+    "loop"
+  ],
+  "author": "Matt McKegg",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mmckegg/soundbank-delay/issues"
+  },
+  "homepage": "https://github.com/mmckegg/soundbank-delay"
+}
