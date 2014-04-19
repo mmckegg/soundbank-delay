@@ -21,7 +21,15 @@ var Delay = require('soundbank-delay')
 
 Create and return an [AudioNode](https://developer.mozilla.org/en-US/docs/Web/API/AudioNode) instance.
 
+### node.sync (get/set)
+
+If `true` the delay will be synced to the tempo specified by `audioContext.scheduler.getTempo()`. Will refresh on `'tempo'` events are emitted by `audioContext.scheduler`.
+
 ### node.time ([AudioParam](https://developer.mozilla.org/en-US/docs/Web/API/AudioParam))
+
+Time the feedback should be delayed by.
+
+If `node.sync` is `true`, this is the number or fraction of beats the feedback should be delayed by.
 
 ### node.wet (AudioParam)
 
