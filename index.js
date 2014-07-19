@@ -8,7 +8,7 @@ function Delay(audioContext){
   var input = audioContext.createGain()
   var output = audioContext.createGain()
 
-  var delay = audioContext.createDelayNode()
+  var delay = audioContext.createDelay()
   var filter = audioContext.createBiquadFilter()
   var feedback = audioContext.createGain()
 
