@@ -44,7 +44,7 @@ If `node.sync` is `true`, this is the number or fraction of beats the feedback s
 ```js
 var Delay = require('soundbank-delay')
 
-var audioContext = new webkitAudioContext()
+var audioContext = new AudioContext()
 
 var delay = Delay(audioContext)
 delay.connect(audioContext.destination)

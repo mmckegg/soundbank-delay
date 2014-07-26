@@ -1,6 +1,6 @@
 var Delay = require('./index')
 
-var audioContext = new webkitAudioContext()
+var audioContext = new AudioContext()
 
 var delay = Delay(audioContext)
 delay.connect(audioContext.destination)
