@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "custom-audio-node": "^0.3.0",
-    "audio-param-transform": "~0.3.0"
+    "audio-param-transform": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {
