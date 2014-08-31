@@ -1,6 +1,6 @@
 {
   "name": "soundbank-delay",
-  "version": "0.1.4",
+  "version": "1.0.0",
   "description": "Basic delay processor AudioNode with feedback, filter and wet/dry AudioParams.",
   "main": "index.js",
   "devDependencies": {
