@@ -1,12 +1,14 @@
-var createAudioNode = require('custom-audio-node')
-var extendTransform = require('audio-param-transform')
-
 module.exports = Delay
 
 function Delay(audioContext){
 
-  var input = audioContext.createGain()
-  var output = audioContext.createGain()
+  var node = audioContext.createGain()
+  node.output = audioContext.createGain()
+
+  var live = audioContext.createGain()
+  node.connect(live)
+  node.output.connect(live)
+  var voltage = flatten(live)
 
   var delay = audioContext.createDelay()
   var filter = audioContext.createBiquadFilter()
@@ -15,13 +17,15 @@ function Delay(audioContext){
   var wet = audioContext.createGain()
   var dry = audioContext.createGain()
 
-  extendTransform(delay.delayTime, audioContext)
+  var delayTimeVoltage = scale(voltage)
+  var timeMultiplier = audioContext.createGain()
+  timeMultiplier.gain.value = 1
 
-  var delayTime = delay.delayTime.transform()
-  var timeMultiplier = delay.delayTime.transform(multiplier)
+  delayTimeVoltage.connect(timeMultiplier)
+  timeMultiplier.connect(delay.delayTime)
 
-  input.connect(dry)
-  input.connect(delay)
+  node.connect(dry)
+  node.connect(delay)
 
   delay.connect(filter)
 
@@ -30,16 +34,30 @@ function Delay(audioContext){
 
   feedback.connect(delay)
 
-  dry.connect(output)
-  wet.connect(output)
+  dry.connect(node.output)
+  wet.connect(node.output)
 
-  var node = createAudioNode(input, output, {
-    wet: { defaultValue: 1, min: 0, target: wet.gain },
-    dry: { defaultValue: 1, min: 0, target: dry.gain },
-    cutoff: { defaultValue: 20000, min: 20, max: 20000, target: filter.frequency },
-    feedback: { defaultValue: 0.6, min: 0, target: feedback.gain },
-    time: { defaultValue: 0.25, min: 0.02, target: delayTime }
-  }, onDestinationChange)
+
+
+  node.wet = wet.gain
+  node.wet.value = 1
+
+  node.dry = dry.gain
+  node.dry.value = 1
+
+  node.cutoff = filter.frequency
+  node.cutoff.value = 20000
+
+  node.feedback = feedback.gain
+  node.feedback.value = 0.6
+
+  node.time = delayTimeVoltage.gain
+  node.time.value = 0.25
+
+  node._scheduler = audioContext.scheduler
+  this._syncing = false
+  node._refreshTimeMultiplier = refreshTimeMultiplier.bind(node)
+  node._timeMultiplier = timeMultiplier.gain
 
   Object.defineProperty(node, 'sync', {
     get: function(){
@@ -47,32 +65,55 @@ function Delay(audioContext){
     },
     set: function(value){
       this._sync = value
-      refreshTimeMultiplier()
+      node._refreshTimeMultiplier()
     }
   })
 
-  function refreshTimeMultiplier(){
-    if (node.sync && audioContext.scheduler){
-      timeMultiplier.value = 120 / audioContext.scheduler.getTempo()
-    } else {
-      timeMultiplier.value = 1
-    }
-  }
-
-  function onDestinationChange(count){
-    if (count === 1){
-      if (audioContext.scheduler){
-        audioContext.scheduler.on('tempo', refreshTimeMultiplier)
-      }
-    } else if (count === 0){
-      if (audioContext.scheduler){
-        audioContext.scheduler.removeListener('tempo', refreshTimeMultiplier)
-      }
-    }
-  }
+  node.connect = connect
+  node.disconnect = disconnect
 
   return node
 
+}
+
+function connect(){
+  if (!this._syncing && this._scheduler){
+    this._scheduler.on('tempo', this._refreshTimeMultiplier)
+    this._syncing = true
+  }
+
+  this.output.connect.apply(this.output, arguments)
+}
+
+function disconnect(){
+  if (this._syncing){
+    this._scheduler.removeListener('tempo', this._refreshTimeMultiplier)
+    this._syncing = false
+  }
+
+  this.output.disconnect.apply(this.output, arguments)
+}
+
+function refreshTimeMultiplier(){
+  if (this.sync && this._scheduler){
+    this._timeMultiplier.value = 120 / this._scheduler.getTempo()
+  } else {
+    this._timeMultiplier.value = 1
+  }
+}
+
+var flat = new Float32Array([1,1])
+function flatten(node){
+  var shaper = node.context.createWaveShaper()
+  shaper.curve = flat
+  node.connect(shaper)
+  return shaper
+}
+
+function scale(node){
+  var gain = node.context.createGain()
+  node.connect(gain)
+  return gain
 }
 
 function multiplier(a, b){

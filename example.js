@@ -5,11 +5,11 @@ var audioContext = new AudioContext()
 var delay = Delay(audioContext)
 delay.connect(audioContext.destination)
 
-addSlider(delay.wet, 0.01, null, 4)
-addSlider(delay.dry, 0.01, null, 4)
-addSlider(delay.cutoff)
-addSlider(delay.feedback, 0.01, null, 2)
-addSlider(delay.time, 0.01, null, 4)
+addSlider('wet', delay.wet, 0.01, null, 4)
+addSlider('dry', delay.dry, 0.01, null, 4)
+addSlider('cutoff', delay.cutoff)
+addSlider('feedback', delay.feedback, 0.01, null, 2)
+addSlider('time', delay.time, 0.01, null, 4)
 
 addButton('trigger source', function(){
   var source = audioContext.createOscillator()
@@ -35,23 +35,27 @@ function addButton(name, down, up){
   document.body.appendChild(button)
 }
 
-function addSlider(param, step, min, max){
+function addSlider(name, param, step, min, max){
   var container = document.createElement('div')
-  container.appendChild(document.createTextNode(param.name))
-  var label = document.createTextNode(param.defaultValue)
+  container.appendChild(document.createTextNode(name))
+  var label = document.createTextNode(param.value)
   var slider = document.createElement('input')
   slider.type = 'range'
-  slider.min = min != null ? min : (param.min || 0)
-  slider.max = max != null ? max : (param.max || 100)
-  slider.value = param.defaultValue
 
+  var min = min != null ? min : (param.minValue || 0)
+  var max = max != null ? max : (param.maxValue || 100)
+
+  var range = max - min
+
+  slider.min = min
+  slider.max = max
+  slider.step = step || (range / 100)
+
+  slider.value = param.value
   slider.style.width = '300px'
 
-  if (step){
-    slider.step = step
-  }
 
-  slider.onchange = function(){
+  slider.oninput = function(){
     label.data = this.value
     param.value = parseFloat(this.value)
   }

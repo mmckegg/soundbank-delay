@@ -3,13 +3,11 @@
   "version": "0.1.4",
   "description": "Basic delay processor AudioNode with feedback, filter and wet/dry AudioParams.",
   "main": "index.js",
-  "dependencies": {
-    "custom-audio-node": "^0.3.0",
-    "audio-param-transform": "^1.0.0"
+  "devDependencies": {
+    "beefy": "^2.1.1"
   },
-  "devDependencies": {},
   "scripts": {
-    "test": "beefy test.js"
+    "example": "beefy example.js"
   },
   "repository": {
     "type": "git",
