@@ -7,7 +7,6 @@ function Delay(audioContext){
 
   var live = audioContext.createGain()
   node.connect(live)
-  node.output.connect(live)
   var voltage = flatten(live)
 
   var delay = audioContext.createDelay()
@@ -16,6 +15,8 @@ function Delay(audioContext){
 
   var wet = audioContext.createGain()
   var dry = audioContext.createGain()
+
+  delay.connect(live)
 
   var delayTimeVoltage = scale(voltage)
   var timeMultiplier = audioContext.createGain()
