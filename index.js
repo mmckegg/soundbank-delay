@@ -70,6 +70,15 @@ function Delay(audioContext){
     }
   })
 
+  Object.defineProperty(node, 'filterType', {
+    get: function(){
+      return filter.type
+    },
+    set: function(value){
+      filter.type = value
+    }
+  })
+
   node.connect = connect
   node.disconnect = disconnect
 

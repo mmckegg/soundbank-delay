@@ -37,6 +37,12 @@ If `node.sync` is `true`, this is the number or fraction of beats the feedback s
 
 ### node.cutoff (AudioParam)
 
+### `reverb.filterType` (get/set)
+
+Defaults to `"lowpass"`.
+
+Can be any of the filters types specified by [BiquadFilterNode](https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode.type)
+
 ### node.feedback (AudioParam)
 
 ## Example
