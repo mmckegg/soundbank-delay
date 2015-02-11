@@ -9,8 +9,8 @@ function Delay(audioContext){
   node.connect(live)
   var voltage = flatten(live)
 
-  var delay = audioContext.createDelay()
-  var filter = audioContext.createBiquadFilter()
+  var delay = audioContext.createDelay(4)
+  var filter = node._filter = audioContext.createBiquadFilter()
   var feedback = audioContext.createGain()
 
   var wet = audioContext.createGain()
@@ -23,6 +23,8 @@ function Delay(audioContext){
   timeMultiplier.gain.value = 1
 
   delayTimeVoltage.connect(timeMultiplier)
+
+  delay.delayTime.value = 0
   timeMultiplier.connect(delay.delayTime)
 
   node.connect(dry)
@@ -55,58 +57,61 @@ function Delay(audioContext){
   node.time = delayTimeVoltage.gain
   node.time.value = 0.25
 
-  node._scheduler = audioContext.scheduler
   this._syncing = false
   node._refreshTimeMultiplier = refreshTimeMultiplier.bind(node)
   node._timeMultiplier = timeMultiplier.gain
 
-  Object.defineProperty(node, 'sync', {
+  Object.defineProperties(node, props)
+
+  return node
+}
+
+var props = {
+  sync: {
     get: function(){
       return this._sync
     },
     set: function(value){
       this._sync = value
-      node._refreshTimeMultiplier()
+      this._refreshTimeMultiplier()
     }
-  })
+  },
 
-  Object.defineProperty(node, 'filterType', {
+  tempo: {
     get: function(){
-      return filter.type
+      return this._tempo
     },
     set: function(value){
-      filter.type = value
+      this._tempo = value
+      this._refreshTimeMultiplier()
     }
-  })
+  },
 
-  node.connect = connect
-  node.disconnect = disconnect
+  filterType: {
+    get: function(){
+      return this._filter.type
+    },
+    set: function(value){
+      this._filter.type = value
+    }
+  },
 
-  return node
+  connect: {
+    value: function(){
+      this.output.connect.apply(this.output, arguments)
+    }
+  },
 
-}
-
-function connect(){
-  if (!this._syncing && this._scheduler){
-    this._scheduler.on('tempo', this._refreshTimeMultiplier)
-    this._syncing = true
+  disconnect: {
+    value: function(){
+      this.output.disconnect.apply(this.output, arguments)
+    }
   }
-
-  this.output.connect.apply(this.output, arguments)
-}
-
-function disconnect(){
-  if (this._syncing){
-    this._scheduler.removeListener('tempo', this._refreshTimeMultiplier)
-    this._syncing = false
-  }
-
-  this.output.disconnect.apply(this.output, arguments)
 }
 
 function refreshTimeMultiplier(){
-  if (this.sync && this._scheduler){
-    this._timeMultiplier.value = 120 / this._scheduler.getTempo()
+  if (this.sync && this.tempo){
+    this._timeMultiplier.value = 60 / this.tempo
   } else {
     this._timeMultiplier.value = 1
   }

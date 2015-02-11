@@ -23,11 +23,11 @@ Create and return an [AudioNode](https://developer.mozilla.org/en-US/docs/Web/AP
 
 ### node.sync (get/set)
 
-If `true` the delay will be synced to the tempo specified by `audioContext.scheduler.getTempo()`. Will refresh on `'tempo'` events are emitted by `audioContext.scheduler`.
+When `true`, the delay rate is multiplied by `60 / node.tempo` to allow beat sync.
 
 ### node.time ([AudioParam](https://developer.mozilla.org/en-US/docs/Web/API/AudioParam))
 
-Time the feedback should be delayed by.
+Time the feedback should be delayed by. Maximum value is 4 seconds.
 
 If `node.sync` is `true`, this is the number or fraction of beats the feedback should be delayed by.
 
